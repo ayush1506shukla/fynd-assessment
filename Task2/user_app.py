@@ -3,7 +3,7 @@ import json
 import pandas as pd
 from ai import generate_user_response, generate_summary, generate_recommendation
 
-DATA_FILE = "Task2/data.json"
+DATA_FILE = "data.json"
 
 def load_data():
     try:
@@ -44,3 +44,4 @@ if st.button("Submit"):
         st.success("Your review was submitted!")
         st.subheader("AI Response:")
         st.write(user_response)
+
