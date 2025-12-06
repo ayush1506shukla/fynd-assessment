@@ -2,7 +2,7 @@ import streamlit as st
 import json
 import pandas as pd
 
-DATA_FILE = "Task2/data.json"
+DATA_FILE = "data.json"
 
 def load_data():
     try:
@@ -27,3 +27,4 @@ else:
     st.metric("Average Rating", round(avg_rating, 2))
 
     st.bar_chart(df["rating"].value_counts())
+
