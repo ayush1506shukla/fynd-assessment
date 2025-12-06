@@ -1,31 +1,47 @@
-import streamlit as st
+from flask import Flask, render_template_string
 import json
-import pandas as pd
+from ai import summarize_review, recommend_action
 
-DATA_FILE = "Task2/data.json"
+app = Flask(__name__)
 
-def load_data():
-    try:
-        with open(DATA_FILE, "r") as f:
-            return json.load(f)
-    except:
-        return []
+ADMIN_HTML = """
+<h2>Admin Dashboard</h2>
 
-st.title("🔐 Admin Dashboard – User Feedback Monitor")
+<table border="1" cellpadding="8">
+<tr>
+  <th>Stars</th>
+  <th>Review</th>
+  <th>Summary</th>
+  <th>Recommended Action</th>
+</tr>
 
-data = load_data()
+{% for row in data %}
+<tr>
+  <td>{{ row.stars }}</td>
+  <td>{{ row.review }}</td>
+  <td>{{ row.summary }}</td>
+  <td>{{ row.action }}</td>
+</tr>
+{% endfor %}
+</table>
+"""
 
-if len(data) == 0:
-    st.info("No submissions yet.")
-else:
-    df = pd.DataFrame(data)
-    st.dataframe(df)
+@app.route("/")
+def home():
+    with open("data.json") as f:
+        entries = json.load(f)
 
-    st.subheader("📊 Analytics")
+    processed = []
 
-    avg_rating = df["rating"].mean()
-    st.metric("Average Rating", round(avg_rating, 2))
+    for e in entries:
+        processed.append({
+            "stars": e["stars"],
+            "review": e["review"],
+            "summary": summarize_review(e["review"]),
+            "action": recommend_action(e["stars"])
+        })
 
-    st.bar_chart(df["rating"].value_counts())
+    return render_template_string(ADMIN_HTML, data=processed)
 
-
+if __name__ == "__main__":
+    app.run(debug=True, port=5002)
