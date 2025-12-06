@@ -4,15 +4,11 @@ from ai import ai_response
 
 app = Flask(__name__)
 
-HTML = """
-<h2>User Review Submission</h2>
-
+USER_HTML = """
+<h2>User Feedback</h2>
 <form method="post">
-  Rating (1-5): <input name="stars" /><br><br>
-
-  Review:<br>
-  <textarea name="review" rows="5" cols="40"></textarea><br><br>
-
+  Rating (1-5): <input name="stars"><br><br>
+  Review: <textarea name="review"></textarea><br><br>
   <button type="submit">Submit</button>
 </form>
 
@@ -22,12 +18,10 @@ HTML = """
 {% endif %}
 """
 
-def save_data(entry):
+def save_to_file(data):
     with open("data.json", "r") as f:
         old = json.load(f)
-
-    old.append(entry)
-
+    old.append(data)
     with open("data.json", "w") as f:
         json.dump(old, f, indent=2)
 
@@ -38,10 +32,9 @@ def home():
     if request.method == "POST":
         stars = int(request.form["stars"])
         review = request.form["review"]
-
         ai_reply = ai_response(review, stars)
 
-        save_data({
+        save_to_file({
             "stars": stars,
             "review": review,
             "ai_reply": ai_reply
@@ -49,7 +42,7 @@ def home():
 
         reply = ai_reply
 
-    return render_template_string(HTML, reply=reply)
+    return render_template_string(USER_HTML, reply=reply)
 
 if __name__ == "__main__":
     app.run(debug=True, port=5001)
