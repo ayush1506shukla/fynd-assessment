@@ -2,7 +2,7 @@ import google.generativeai as genai
 import os
 
 # Load your API Key from environment variable
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+genai.configure(api_key=os.getenv("AIzaSyAlj8ccwu9E0MQYLCx9FtDTbv_JhxkOF8w"))
 
 def generate_user_response(rating, review):
     prompt = f"""
@@ -37,3 +37,4 @@ def generate_recommendation(review):
     model = genai.GenerativeModel("gemini-pro")
     response = model.generate_content(prompt)
     return response.text
+
