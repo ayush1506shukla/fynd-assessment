@@ -1,13 +1,15 @@
+import random
+
 def summarize_review(review):
-    return f"Summary: {review[:70]}..."
+    return f"Summary: {review[:60]}..."
 
 def recommend_action(stars):
     if stars <= 2:
-        return "Apologize and offer help."
+        return "Apologize and offer support."
     elif stars == 3:
-        return "Ask user for more details."
+        return "Request clarification."
     else:
-        return "Thank user and encourage repeat visit."
+        return "Thank customer and highlight strengths."
 
 def ai_response(review, stars):
-    return f"Thanks for your {stars}-star review! We appreciate your feedback: {review[:50]}..."
+    return f"Thanks for your {stars}-star review! We appreciate your feedback."
