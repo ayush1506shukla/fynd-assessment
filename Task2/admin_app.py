@@ -9,18 +9,18 @@ ADMIN_HTML = """
 
 <table border="1" cellpadding="8">
 <tr>
-  <th>Stars</th>
-  <th>Review</th>
-  <th>Summary</th>
-  <th>Recommended Action</th>
+    <th>Rating</th>
+    <th>Review</th>
+    <th>AI Summary</th>
+    <th>Next Action</th>
 </tr>
 
-{% for row in data %}
+{% for item in data %}
 <tr>
-  <td>{{ row.stars }}</td>
-  <td>{{ row.review }}</td>
-  <td>{{ row.summary }}</td>
-  <td>{{ row.action }}</td>
+  <td>{{ item.stars }}</td>
+  <td>{{ item.review }}</td>
+  <td>{{ item.summary }}</td>
+  <td>{{ item.action }}</td>
 </tr>
 {% endfor %}
 </table>
@@ -32,7 +32,6 @@ def home():
         entries = json.load(f)
 
     processed = []
-
     for e in entries:
         processed.append({
             "stars": e["stars"],
