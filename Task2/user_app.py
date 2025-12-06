@@ -1,48 +1,46 @@
-from flask import Flask, render_template_string, request
+import streamlit as st
 import json
-from ai import ai_response
+import pandas as pd
+from ai import generate_user_response, generate_summary, generate_recommendation
 
-app = Flask(__name__)
+DATA_FILE = "Task2/data.json"
 
-USER_HTML = """
-<h2>User Feedback</h2>
-<form method="post">
-  Rating (1-5): <input name="stars"><br><br>
-  Review: <textarea name="review"></textarea><br><br>
-  <button type="submit">Submit</button>
-</form>
+def load_data():
+    try:
+        with open(DATA_FILE, "r") as f:
+            return json.load(f)
+    except:
+        return []
 
-{% if reply %}
-<h3>AI Response:</h3>
-<p>{{ reply }}</p>
-{% endif %}
-"""
+def save_data(data):
+    with open(DATA_FILE, "w") as f:
+        json.dump(data, f, indent=4)
 
-def save_to_file(data):
-    with open("data.json", "r") as f:
-        old = json.load(f)
-    old.append(data)
-    with open("data.json", "w") as f:
-        json.dump(old, f, indent=2)
+st.title("⭐ User Review Dashboard")
 
-@app.route("/", methods=["GET", "POST"])
-def home():
-    reply = None
+rating = st.slider("Select Rating", 1, 5)
+review = st.text_area("Write your review")
 
-    if request.method == "POST":
-        stars = int(request.form["stars"])
-        review = request.form["review"]
-        ai_reply = ai_response(review, stars)
+if st.button("Submit"):
+    if review.strip() == "":
+        st.warning("Please enter a review")
+    else:
+        user_response = generate_user_response(rating, review)
+        summary = generate_summary(review)
+        recommendation = generate_recommendation(review)
 
-        save_to_file({
-            "stars": stars,
+        new_entry = {
+            "rating": rating,
             "review": review,
-            "ai_reply": ai_reply
-        })
+            "ai_response": user_response,
+            "summary": summary,
+            "recommendation": recommendation
+        }
 
-        reply = ai_reply
+        data = load_data()
+        data.append(new_entry)
+        save_data(data)
 
-    return render_template_string(USER_HTML, reply=reply)
-
-if __name__ == "__main__":
-    app.run(debug=True, port=5001)
+        st.success("Your review was submitted!")
+        st.subheader("AI Response:")
+        st.write(user_response)
